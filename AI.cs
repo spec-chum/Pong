@@ -6,8 +6,7 @@ namespace Pong;
 
 public sealed class AI : IPaddle
 {
-    private const int Speed = 4;
-    private const float PaddleOffset = 1f;
+    private const int Speed = 4 * 60;
 
     private readonly Pong _game;
     private readonly Texture2D _texture;
@@ -29,23 +28,27 @@ public sealed class AI : IPaddle
         _sprite = new Sprite
         {
             Texture = _texture,
-            Position = new Vector2(_screenBounds.Width - IPaddle.Width * 2, _screenBounds.Height / 2),
-            Origin = new Vector2(0.5f),
-            Scale = new Vector2(IPaddle.Width, IPaddle.Height),
+            Bounds = new Rectangle(new Point(_screenBounds.Width - (IPaddle.Width * 2), _screenBounds.Height / 2), new Point(IPaddle.Width, IPaddle.Height)),
             Color = Color.White
         };
     }
 
     public void Update(GameTime gameTime)
     {
-        float direction = MathF.Sign(_game.Ball.Sprite.Y - _sprite.Y);
-        float targetY = _game.Ball.Sprite.Y + (direction * RandomHelpers.NextSingle(-0.5f, 0.5f) * PaddleOffset);
-        targetY = MathHelper.Clamp(targetY, IPaddle.Height / 2, _game.ScreenBounds.Height - IPaddle.Height / 2);
-        _sprite.Y = MathHelper.Lerp(_sprite.Y, targetY, (float)(Speed * gameTime.ElapsedGameTime.TotalSeconds));
+        float direction = Math.Sign(_game.Ball.Sprite.Bounds.Center.Y - _sprite.Bounds.Center.Y);
+        float targetY = _game.Ball.Sprite.Bounds.Center.Y + (IPaddle.Height / 2 * direction);
+
+        float randomness = RandomHelpers.NextSingle(-1f, 1f);
+        targetY += randomness;
+
+        // Clamp and move towards target
+        float speedDelta = (float)(Speed * gameTime.ElapsedGameTime.TotalSeconds);
+        targetY = MathHelper.Clamp(targetY, 0, _screenBounds.Height - IPaddle.Height);
+        _sprite.Y = (float)(Math.Abs(targetY - _sprite.Y) <= speedDelta ? targetY : _sprite.Y + (Math.Sign(targetY - _sprite.Y) * speedDelta));
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_sprite.Texture, _sprite.Position, null, _sprite.Color, _sprite.Rotation, _sprite.Origin, _sprite.Scale, _sprite.Effects, _sprite.LayerDepth);
+        spriteBatch.Draw(_sprite.Texture, _sprite.Bounds, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
     }
 }

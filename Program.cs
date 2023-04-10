@@ -1,8 +1,10 @@
-﻿internal class Program
+﻿namespace Pong;
+
+internal static class Program
 {
     private static void Main()
     {
-        using var game = new Pong.Pong();
+        using var game = new Pong();
         game.Run();
     }
 }

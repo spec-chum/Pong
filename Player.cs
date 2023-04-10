@@ -12,10 +12,10 @@ public sealed class Player : IPaddle
 
     public Sprite Sprite => _sprite;
 
-    public Player(Pong gameManager, Texture2D texture)
+    public Player(Pong game, Texture2D texture)
     {
         _texture = texture;
-        _screenBounds = gameManager.ScreenBounds;
+        _screenBounds = game.ScreenBounds;
         Reset();
     }
 
@@ -24,9 +24,7 @@ public sealed class Player : IPaddle
         _sprite = new Sprite
         {
             Texture = _texture,
-            Position = new Vector2(IPaddle.Width * 2, _screenBounds.Height / 2),
-            Origin = new Vector2(0.5f),
-            Scale = new Vector2(IPaddle.Width, IPaddle.Height),
+            Bounds = new Rectangle(new Point(IPaddle.Width * 2, _screenBounds.Height / 2), new Point(IPaddle.Width, IPaddle.Height)),
             Color = Color.White
         };
     }
@@ -34,11 +32,13 @@ public sealed class Player : IPaddle
     public void Update()
     {
         var ms = Mouse.GetState();
-        _sprite.Y = MathHelper.Clamp((float)ms.Y, IPaddle.Height / 2, _screenBounds.Height - IPaddle.Height / 2);
+
+        // Clamp and make mouse Y pos middle of paddle
+        _sprite.Y = MathHelper.Clamp(ms.Y - (IPaddle.Height / 2f), 0, _screenBounds.Height - IPaddle.Height);
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_sprite.Texture, _sprite.Position, null, _sprite.Color, _sprite.Rotation, _sprite.Origin, _sprite.Scale, _sprite.Effects, _sprite.LayerDepth);
+        spriteBatch.Draw(_sprite.Texture, _sprite.Bounds, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
     }
 }

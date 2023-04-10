@@ -3,11 +3,11 @@ using System;
 
 namespace Pong;
 
-internal static class RandomHelpers
+public static class RandomHelpers
 {
     public static float NextSingle(float min, float max)
     {
-        return Random.Shared.NextSingle() * (max - min) + min;
+        return (Random.Shared.NextSingle() * (max - min)) + min;
     }
 
     public static Vector2 NextVector2(float min, float max)

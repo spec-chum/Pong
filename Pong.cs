@@ -5,7 +5,7 @@ namespace Pong;
 
 public sealed class Pong : Game
 {
-    private GraphicsDeviceManager _graphics;
+    private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Texture2D _texture;
     private SpriteFont _font;
@@ -20,6 +20,7 @@ public sealed class Pong : Game
     public Pong()
     {
         _graphics = new GraphicsDeviceManager(this);
+        _graphics.ApplyChanges();   // Silence warning IDE0052
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
